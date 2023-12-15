@@ -1,0 +1,7 @@
+<?php
+
+$mailgunApiKey = "your key here";
+$mailgunDomain = "https://api.mailgun.net/";
+$sendingDomain = "domain.com";
+
+?>
