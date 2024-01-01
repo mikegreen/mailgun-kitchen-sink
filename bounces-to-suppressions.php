@@ -44,7 +44,7 @@ while ($beginTime > (microtime(true) - ($daysToGoBack * $secondsInDay))) {
 function getFailedEvents($mailgun, $sendingDomain, $beginTime, $endTime) {
     $response = $mailgun->events()->get($sendingDomain, [
         'event' => 'failed',
-        'severity' => 'permanent',
+        // 'severity' => 'permanent',
         'begin' => $beginTime,
         'end' => $endTime,
         'limit' => 300
@@ -74,11 +74,12 @@ function processBounces($mailgun, $sendingDomain, $response) {
             $failedMessage = $failedDeliveryStatus['message'] . "\n";
             $failedTimestamp = $item->getTimestamp();
             $failedDate = date('r', $failedTimestamp);
+            $failedSeverity = $item->getSeverity();
 
             // print_r($item);
             
             echo "Recipient: " . $failedRecipient . "\n";
-            echo "Error : " . $failedMessage . "code: " . $failedCode . "on " . $failedDate . "\n";
+            echo $failedSeverity . ": Error : " . $failedMessage . "code: " . $failedCode . "on " . $failedDate . "\n";
 
             $result = $mailgun->suppressions()->bounces()->create(
                 $sendingDomain, $failedRecipient, [
@@ -105,7 +106,7 @@ function bounceExists($mailgun, $sendingDomain, $failedRecipient) {
         return true;
     } catch (\Exception $e) {
         // https://github.com/mailgun/mailgun-php/issues/887
-        echo 'Caught exception: ',  $e->getMessage(), "\n";
+        // echo 'Caught exception: ',  $e->getMessage(), "\n";
         return false;
     }
 }
